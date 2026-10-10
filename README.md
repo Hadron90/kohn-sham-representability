@@ -24,8 +24,8 @@ python trench_model.py --table
 cd lean/ksproof && lake build && lake env lean KSProof/Axioms.lean
 ```
 
-## Status (10 Oct 2026; four review rounds applied)
-- Theorem A (Friedrichs realisation of V is a KS Hamiltonian; Aufbau determinant is a ground state with density n): proved from the preprint's (H1)–(H5).
+## Status (10 Oct 2026; five review rounds applied)
+- Theorem A (Friedrichs realisation of V is a KS Hamiltonian; Aufbau determinant is a ground state with density n): proved from the preprint's (H1)–(H5). Corollary 3.8 (uniqueness of the representing potential within the KLMN class) now has a self-contained proof (the determinant Φ is a ground state of H_s(u); its occupied space is h_u-invariant; spin structure forces g to be an eigenfunction; divide by g). The introduction delimits what is inherited from the preprint and what is new, and states the meaning of 'representable' versus Lieb's framework.
 - Proposition 5.4 (V bounded off the plane): proved from the preprint's channel estimates (C1)–(C3) + Gilbarg–Trudinger 9.11.
 - Theorem B (form domain = H^1, KLMN, uniqueness in K): proved **conditional on Estimate 5.5** (uniform vertical L^1 bound on the strip).
 - Estimate 5.5: open. Reduced (Lemma 5.6) to a horizontal-gradient bound on θ and a flux balance; Lemma 5.8 gives the sufficient flux condition in normalised form (|D_z − 4J²| ≤ K ε n²/(z²+ε²)); Remark 5.9 states the target at the plane against the exact quantity √D_z/2 (positivity of ∂²_z n on the plane for large p from the channel expansion, ε_* = ε(p)(1+O(p⁻¹)); not C(p)ε(p), which would need O(p⁻³) density asymptotics the preprint lacks) and Lemma 5.8(b) shows O(ε) relative accuracy is necessary in the model.
