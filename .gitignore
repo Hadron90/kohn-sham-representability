@@ -1,0 +1,15 @@
+# Lean build artifacts and the Mathlib cache (several GB; rebuild with `lake exe cache get && lake build`)
+lean/ksproof/.lake/
+# Python
+__pycache__/
+*.pyc
+# LaTeX build residue
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+# Local tooling and third-party material not redistributed here
+tools/tectonic.exe
+paper.pdf
+paper.txt

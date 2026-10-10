@@ -1,0 +1,9 @@
+name = "ksproof"
+defaultTargets = ["KSProof"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+
+[[lean_lib]]
+name = "KSProof"

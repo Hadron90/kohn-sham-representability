@@ -1,0 +1,565 @@
+% main.tex -- manuscript body; compiled through draft.tex.
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+% ---------- theorem environments ----------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{hypotheses}[theorem]{Standing hypotheses}
+\newtheorem{estimate}[theorem]{Estimate}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Hs}{\mathcal{H}}
+\newcommand{\VV}{\mathcal{V}}
+\newcommand{\KK}{\mathcal{K}}
+\renewcommand{\SS}{\mathcal{S}}
+\newcommand{\LL}{L^{3/2}(\R^3)+L^\infty(\R^3)}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\ip}[2]{\left\langle #1,\,#2\right\rangle}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Dom}{Dom}
+\DeclareMathOperator{\divg}{div}
+\DeclareMathOperator{\ess}{ess}
+\newcommand{\hg}{\hat g}
+
+\title{A Kohn--Sham Hamiltonian for the OpenAI three-electron density:\\ representability beyond $L^{3/2}+L^\infty$}
+\author{Cody Haycraft\\[2pt] \small Draft of \today}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A recent preprint constructs a three-electron Coulomb molecule whose ground-state density $n$ admits no noninteracting ground-state ensemble representation with a real, spin-independent local potential in $\LL$. The proof identifies the only candidate potential, $V=\Delta g/(2g)$ for an even orbital $g$ built from $n$ by a constrained angle minimisation, and shows that $V$ leaves that class. We observe that the preprint's own estimates imply that $-\tfrac12\Delta+V$ is a nonnegative symmetric operator on $C_c^\infty(\R^3)$, and we prove (Theorem~A) that its Friedrichs extension $H_V$ is a self-adjoint Kohn--Sham Hamiltonian with $\sigma(H_V)\subset\{0\}\cup[d,\infty)$, with $g$ as its simple ground state and the odd orbital $h$ as an eigenfunction at the gap $d>0$; the Aufbau determinant $\hg\!\uparrow\hg\!\downarrow h\!\uparrow$ is a ground state of the three-electron operator with density $n$. Hence $n$ is pure-state, Aufbau, local-potential representable by an ordinary function, smooth away from the nuclei, and any potential in the KLMN class that represents $n$ equals $V$ up to a constant. The preprint's exclusion theorem retains its stated scope; what changes is the operator realisation under which the potential is admitted. We then prove that $V$ is bounded away from the nodal plane far from the nuclei and reduce the question of the form domain of $H_V$ to a single estimate, a uniform bound on the vertical $L^1$ norms of $V$ across the plane; under that estimate (Theorem~B) $V$ is infinitesimally form-bounded, the form domain is $H^1(\R^3)$, $H_V$ is the KLMN form sum, and $V$ is the unique representing potential in the KLMN class. A one-dimensional model of the strip around the plane, solved numerically, suggests that $V$ carries an attractive sheet of integrated strength $\sqrt{2d}$ whose width shrinks like $p^{-3}$ with the distance $p$ along the plane; the corresponding statements for the molecule are formulated as conjectures.
+\end{abstract}
+
+\section{Introduction}
+
+Kohn--Sham density-functional theory replaces the interacting ground-state problem by a system of noninteracting electrons in a common local potential whose ground-state density equals the interacting density $n$ \cite{HK,KS}. Whether such a potential exists for a given $n$ is the noninteracting $v$-representability problem; its precise form depends on the class of potentials admitted. In Lieb's framework \cite{Lieb83} densities live in $X=L^1(\R^3)\cap L^3(\R^3)$ and potentials in the dual $X^*=\LL=:\VV$, and representability of $n$ in $\VV$ is equivalent to nonemptiness of the subdifferential of the noninteracting constrained-search functional at $n$. It has long been known that representability can fail for prescribed densities, that ensembles enlarge the representable set \cite{Levy82,Lieb83}, that on finite lattices every strictly positive density is ensemble representable \cite{CCR}, and that in one dimension the problem is fully solved once distributional potentials are admitted \cite{Sutter24,Corso26}. Reviews are given in \cite{PenzReview1,PenzReview2,vanLeeuwen03}.
+
+The preprint \cite{OpenAI} (henceforth ``the preprint'') constructs a finite three-electron Coulomb system, two nuclei of equal integer charge $Z$ at $(0,0,\pm D/Z)$ with $D=10^{200}$, whose $S_z=\tfrac12$ ground-state density $n$ has no ground-state ensemble representation of
+\[
+H_s(v)=\sum_{i=1}^3\Big(-\tfrac12\Delta_i+v(\mathbf r_i)\Big),\qquad v\in\VV\ \text{real and spin-independent}.
+\]
+The mechanism is the nodal-plane effect of Gori-Giorgi, G\'al and Baerends \cite{GGB16}: the state continues $b\!\uparrow b\!\downarrow e\!\uparrow$ with $e$ odd under reflection in the median plane $z=0$; the leading removal amplitude vanishes on the plane, but coupling to an odd ionic channel gives the density the same exponential rate on and off the plane with only polynomial suppression on it. The preprint then (i) constructs orbitals $g=\sqrt n\cos\theta$ (even, occupation two) and $h=\sqrt n\sin\theta$ (odd, occupation one) by minimising $\int n|\nabla\theta|^2$ under $\int n\sin^2\theta=1$, (ii) proves by a weighted Poincar\'e inequality that the determinant $\hg\!\uparrow\hg\!\downarrow h\!\uparrow$, $\hg=g/\sqrt2$, minimises the kinetic energy among all ensembles with density $n$, so that any representing local potential must equal $V:=\Delta g/(2g)$ up to a constant, and (iii) shows that $V\notin\VV$. The preprint is explicit (p.~2) that it ``makes no assertion about larger classes of distributional potentials, spin-dependent potentials, or nonlocal one-particle operators.''
+
+The purpose of this note is to walk through that gap. The potential $V$ is not a distribution; it is a function, smooth away from the two nuclei and locally square integrable. The preprint's ground-state representation (its Eq.~(5.10)) says precisely that the quadratic form of $-\tfrac12\Delta+V$ on $C_c^\infty(\R^3)$ is nonnegative. A nonnegative symmetric operator has a canonical self-adjoint extension, the Friedrichs extension, and we show (Theorem~\ref{thm:A}) that this extension is a Kohn--Sham Hamiltonian in the following precise sense: it is self-adjoint and nonnegative, $g$ is its simple ground state at energy $0$, $h$ is an eigenfunction at energy $d>0$, nothing lies in $(0,d)$, and the Aufbau determinant is a ground state of the three-electron operator with density $n$. Any potential in the KLMN class that represents $n$ equals $V$ up to a constant (Corollary~\ref{cor:unique}). Nothing in the Kohn--Sham equations is modified; only the operator realisation is broadened. The preprint's exclusion theorem retains its stated scope, namely that no representing potential exists in $\LL$; Theorem~\ref{thm:A} shows that its own estimates imply representability under the Friedrichs realisation.
+
+Section~\ref{sec:strip} proposes, on the basis of a one-dimensional model of the strip around the nodal plane solved numerically, a description of why $V$ leaves $\VV$: it would carry an attractive sheet of fixed integrated strength $\sqrt{2d}$ whose width shrinks like $p^{-3}$ and whose depth grows like $p^{3}$ with the distance $p$ along the plane. An exact identity (Proposition~\ref{prop:flux}) expresses the sheet through the vertical flux $J=N\theta'$ of the angle field. Such a sheet lies outside $\VV$: its vertical $L^1$ norm is fixed while its width shrinks, so its $L^{3/2}$ norm on unit balls along the plane grows like $\varepsilon(p)^{-1/3}$, whereas the quadratic form controls it through the vertical $L^1$ norm alone (Lemma~\ref{lem:sheet}). This is the mechanism by which Theorem~\ref{thm:A} coexists with the preprint's exclusion theorem. Section~\ref{sec:B} concerns the form domain of $H_V$: we prove that $V$ is bounded away from the plane (Proposition~\ref{prop:E1}), reduce the remaining question to a single strip estimate (Estimate~\ref{est:E2}), and prove Theorem~\ref{thm:B} under that estimate.
+
+\section{Setting and standing hypotheses}\label{sec:setting}
+
+We work in the preprint's scaled units: nuclear charges one at $\pm D\mathbf e_z$, electron repulsion coefficient $\lambda=1/Z$, and $n$ the spin-summed density of the scaled interacting state, $\int n=3$. By the preprint's Proposition~2.1 the physical density is $n_{\rm phys}(\mathbf r)=Z^3 n(Z\mathbf r)$ and a potential for $n$ transfers to $V_{\rm phys}(\mathbf r)=Z^2V(Z\mathbf r)$, so nothing is lost by working in scaled units. We write $\mathbf x=(x_1,x_2,z)$, $\mathbf x_\parallel=(x_1,x_2)$, $r=|\mathbf x|$, $p=|\mathbf x_\parallel|$, $t=z/r$, and use the preprint's notation throughout; in particular $k=\sqrt{2(E_2-E_3)}$ is the ionisation rate and $A(r)=e^{-kr}r^\beta$. All functions are complex-valued unless stated otherwise; $\ip{\cdot}{\cdot}$ is linear in the second argument.
+
+The following properties of $n$, $\theta$, $g$, $h$, $V$ are proved in the preprint (its Sections~2--5; the list at the beginning of its Section~6 collects them). They are the only inputs to Theorem~\ref{thm:A}.
+
+\begin{hypotheses}\label{hyp}
+\begin{enumerate}
+\item[(H1)] $n\in H^2(\R^3)\cap L^1(\R^3)$, $n>0$ and continuous, $\sqrt n\in H^1(\R^3)$, $n$ even under $z\mapsto-z$ and axisymmetric about the $z$-axis, smooth on $\R^3\setminus\{\pm D\mathbf e_z\}$. [Preprint Lemma~2.4, Prop.~3.1.]
+\item[(H2)] $\theta\colon\R^3\to\R$ is odd under $z\mapsto-z$, locally $C^{1,\alpha}$ ($W^{2,p}_{\rm loc}$ for $p<6$), $0<\theta<\pi/2$ on $\{z>0\}$, $\theta=0$ on $\{z=0\}$, $\int n|\nabla\theta|^2<\infty$, $\int n\sin^2\theta=1$, and
+\[
+\divg(n\nabla\theta)=-d\,n\sin(2\theta)\quad\text{in }\mathcal D'(\R^3),\qquad d>0 .
+\]
+[Preprint Prop.~4.1, Eq.~(4.2).] The preprint does not assert that $\theta$ is axisymmetric, and no axial symmetry of $\theta$, $g$, $h$ or $V$ is assumed below.
+\item[(H3)] $g=\sqrt n\cos\theta$ and $h=\sqrt n\sin\theta$ belong to $H^1(\R^3)\cap H^2_{\rm loc}(\R^3)$; $g$ is even, continuous and strictly positive; $h$ is odd; $\norm g^2=2$, $\norm h^2=1$, $\ip gh=0$, $g^2+h^2=n$. [Preprint Prop.~4.3.]
+\item[(H4)] $V:=\Delta g/(2g)\in L^2_{\rm loc}(\R^3)$ is real and even, $\int_{\R^3}n|V|<\infty$, and
+\[
+\big(-\tfrac12\Delta+V\big)g=0,\qquad \big(-\tfrac12\Delta+V\big)h=d\,h\qquad\text{in }\mathcal D'(\R^3);
+\]
+moreover, almost everywhere,
+\begin{equation}\label{eq:Vformula}
+V=\frac{\Delta\sqrt n}{2\sqrt n}-\frac{|\nabla\theta|^2}{2}+d\sin^2\theta .
+\end{equation}
+[Preprint Prop.~4.3, Eqs.~(4.7)--(4.8); Prop.~5.1, Eq.~(5.9).]
+\item[(H5)] (Weighted gap.) With $H^1(g^2):=\{\varphi\in H^1_{\rm loc}(\R^3):\int g^2(|\varphi|^2+|\nabla\varphi|^2)<\infty\}$,
+\begin{equation}\label{eq:gap}
+\frac12\int_{\R^3}g^2|\nabla\varphi|^2\;\ge\;d\Big(\int_{\R^3}g^2|\varphi|^2-\frac{|\int_{\R^3}g^2\varphi|^2}{\int_{\R^3}g^2}\Big)\qquad\text{for all }\varphi\in H^1(g^2).
+\end{equation}
+[Preprint Prop.~4.6, Eq.~(4.23), and Lemma~4.7 for the fixed charge of its Theorem~1.1.]
+\end{enumerate}
+\end{hypotheses}
+
+We also recall the two classes of potentials that appear.
+\begin{definition}\label{def:classes}
+$\VV:=\LL$ (real-valued). $\KK$ is the KLMN class: real $u\in L^1_{\rm loc}(\R^3)$ such that for some $\alpha<1$ and $C<\infty$,
+\begin{equation}\label{eq:klmn}
+\int_{\R^3}|u||f|^2\le\frac{\alpha}{2}\norm{\nabla f}^2+C\norm f^2\qquad\text{for all }f\in H^1(\R^3).
+\end{equation}
+If \eqref{eq:klmn} holds for every $\alpha>0$ (with $C=C_\alpha$), $u$ is called infinitesimally form-bounded; we write $\KK_\infty$ for this subclass. $\VV\subset\KK_\infty$ (preprint Eq.~(5.13)), and for $u\in\KK$ the form $\tfrac12\norm{\nabla f}^2+\int u|f|^2$ is closed on $H^1(\R^3)$ and bounded below (KLMN theorem, \cite[Thm.~X.17]{RS2}); the associated self-adjoint operator is the form sum $-\tfrac12\Delta\dotplus u$.
+\end{definition}
+
+\section{Theorem A: the Friedrichs realisation of \texorpdfstring{$V$}{V}}\label{sec:A}
+
+\begin{definition}\label{def:T0}
+Let $T_0:=-\tfrac12\Delta+V$ with domain $\Dom(T_0)=C_c^\infty(\R^3)\subset L^2(\R^3)$, and let $q_0[f]:=\ip f{T_0f}$ for $f\in C_c^\infty(\R^3)$.
+\end{definition}
+
+Since $V\in L^2_{\rm loc}$ and $f$ is bounded with compact support, $T_0f\in L^2(\R^3)$; since $V$ is real, $T_0$ is symmetric.
+
+\begin{lemma}[Ground-state representation on test functions]\label{lem:gsr}
+For every $f\in C_c^\infty(\R^3)$,
+\begin{equation}\label{eq:gsr}
+q_0[f]=\frac12\int_{\R^3}|\nabla f|^2+\int_{\R^3}V|f|^2=\frac12\int_{\R^3}g^2\Big|\nabla\frac fg\Big|^2\;\ge\;0 .
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+This is the preprint's Eq.~(5.10); we include the computation because it is the whole point. Let $K=\supp f$ and $u=f/g$. By (H3), $g\in H^2_{\rm loc}\subset W^{1,6}_{\rm loc}\cap C^{0,1/2}_{\rm loc}$ in three dimensions, and $g\ge c_K>0$ on $K$; hence $1/g\in W^{1,6}(K)\cap L^\infty(K)$ and $u\in W^{1,6}(K)$ with compact support. Almost everywhere on $K$,
+\[
+\nabla f=u\nabla g+g\nabla u,\qquad |\nabla f|^2=|u|^2|\nabla g|^2+g^2|\nabla u|^2+2g\,\mathrm{Re}(\bar u\nabla u)\cdot\nabla g,
+\]
+and, by the definition of $V$ and $\Delta g\in L^2_{\rm loc}$, $V|f|^2=\tfrac12 g\,\Delta g\,|u|^2$ a.e. Therefore
+\[
+\begin{aligned}
+\tfrac12|\nabla f|^2+V|f|^2&=\tfrac12 g^2|\nabla u|^2+\tfrac12\Big(|u|^2|\nabla g|^2+2g\,\mathrm{Re}(\bar u\nabla u)\cdot\nabla g+g\Delta g|u|^2\Big)\\
+&=\tfrac12 g^2|\nabla u|^2+\tfrac12\divg\!\big(|u|^2g\nabla g\big).
+\end{aligned}
+\]
+The vector field $F:=|u|^2 g\nabla g=|f|^2\nabla g/g$ has compact support and belongs to $W^{1,1}(\R^3)$: $\nabla g\in H^1_{\rm loc}\subset L^6_{\rm loc}$, $1/g\in L^\infty(K)$ with $\nabla(1/g)=-\nabla g/g^2\in L^6(K)$, so $\nabla g/g\in L^6(K)$ and $\nabla(\nabla g/g)=\nabla^2g/g-\nabla g\otimes\nabla g/g^2\in L^2(K)+L^3(K)\subset L^1(K)$; multiplication by the smooth compactly supported $|f|^2$ preserves $W^{1,1}$. For $F\in W^{1,1}(\R^3)$ with compact support, $\int\divg F=0$ (approximate $F$ in $W^{1,1}$ by $C_c^\infty$ fields). Integrating the identity over $\R^3$ gives \eqref{eq:gsr}.
+\end{proof}
+
+\begin{definition}[The Kohn--Sham Hamiltonian]\label{def:HV}
+By Lemma~\ref{lem:gsr}, $T_0$ is a densely defined, symmetric, nonnegative operator. Let $H_V$ be its Friedrichs extension \cite[Thm.~X.23]{RS2}, \cite[VI.\S2.3]{Kato}: the self-adjoint operator associated with the closure $\bar q$ of $q_0$. Its form domain $Q:=\Dom(\bar q)$ is the completion of $C_c^\infty(\R^3)$ in the norm $\norm f_q^2:=q_0[f]+\norm f^2$, realised inside $L^2(\R^3)$. We write $\bar q(\cdot,\cdot)$ for the associated sesquilinear form.
+\end{definition}
+
+\begin{lemma}[Identification of the closed form]\label{lem:EV}
+Let $E_V:=\{f\in H^1(\R^3):\int|V||f|^2<\infty\}$. Then $E_V\subset Q$ and, for every $f\in E_V$,
+\begin{equation}\label{eq:EVform}
+\bar q[f]=\frac12\int_{\R^3}|\nabla f|^2+\int_{\R^3}V|f|^2=\frac12\int_{\R^3}g^2\Big|\nabla\frac fg\Big|^2 .
+\end{equation}
+In particular $g,h\in E_V\subset Q$, with $\bar q[g]=0$ and $\bar q[h]=d$.
+\end{lemma}
+
+\begin{proof}
+\emph{Step 1: compactly supported $f\in E_V$.} Let $f\in H^1$ have support in a compact $K$ and choose $f_j\in C_c^\infty$ with supports in a fixed compact $K'\supset K$ and $f_j\to f$ in $H^1$. By the Sobolev embedding $H^1(K')\hookrightarrow L^4(K')$, $|f_j-f_k|^2\to0$ in $L^2(K')$, hence
+\[
+\int|V||f_j-f_k|^2\le\norm V_{L^2(K')}\norm{|f_j-f_k|^2}_{L^2(K')}\to0 .
+\]
+Thus $(f_j)$ is Cauchy in $\norm\cdot_q$, so $f\in Q$ and $\bar q[f]=\lim q_0[f_j]=\tfrac12\int|\nabla f|^2+\int V|f|^2$, the last equality by the same two convergences. For the second equality in \eqref{eq:EVform}: $\nabla(f_j/g)-\nabla(f/g)=\nabla(f_j-f)/g-(f_j-f)\nabla g/g^2$; the first term tends to $0$ in $L^2(K')$ because $1/g$ is bounded there, the second because $f_j-f\to0$ in $L^3(K')$ and $\nabla g/g^2\in L^6(K')$. Since $g$ is bounded on $K'$, $\tfrac12\int g^2|\nabla(f_j/g)|^2\to\tfrac12\int g^2|\nabla(f/g)|^2$, and Lemma~\ref{lem:gsr} passes to the limit.
+
+\emph{Step 2: general $f\in E_V$.} Let $\chi_R(\mathbf x)=\chi(\mathbf x/R)$ with $\chi\in C_c^\infty$, $0\le\chi\le1$, $\chi=1$ on the unit ball; then $|\nabla\chi_R|\le C/R$. Each $\chi_Rf$ is a compactly supported element of $E_V$, so Step~1 applies to it and to differences $\chi_Rf-\chi_{R'}f$. Now $\chi_Rf\to f$ in $H^1$, and
+\[
+\int|V|\,|(\chi_R-\chi_{R'})f|^2\le\int_{|\mathbf x|\ge\min(R,R')}|V||f|^2\to0
+\]
+by dominated convergence. Hence $(\chi_Rf)_R$ is Cauchy in $\norm\cdot_q$, $f\in Q$, and $\bar q[f]=\lim_R\bar q[\chi_Rf]=\tfrac12\int|\nabla f|^2+\int V|f|^2$ (again by $H^1$ convergence and dominated convergence). For the weighted expression put $u=f/g\in H^1_{\rm loc}$. From $\nabla(\chi_Ru)=\chi_R\nabla u+u\nabla\chi_R$ and $\int g^2|u\nabla\chi_R|^2\le C R^{-2}\int|f|^2\to0$ we get, by Step~1,
+\[
+\tfrac12\int g^2\chi_R^2|\nabla u|^2\le\bar q[\chi_Rf]+\tfrac{C}{R^2}\norm f^2+\sqrt{2\bar q[\chi_Rf]}\,\tfrac{C}{R}\norm f ,
+\]
+which is bounded in $R$; Fatou's lemma gives $\int g^2|\nabla u|^2<\infty$, and then dominated convergence gives $\tfrac12\int g^2|\nabla(\chi_Ru)|^2\to\tfrac12\int g^2|\nabla u|^2$. This proves \eqref{eq:EVform}.
+
+\emph{Step 3.} By (H3)--(H4), $g,h\in H^1$ and $\int|V|(g^2+h^2)=\int|V|n<\infty$, so $g,h\in E_V$. Taking $f=g$ in \eqref{eq:EVform} gives $\bar q[g]=\tfrac12\int g^2|\nabla 1|^2=0$. For $h$ we use the polarised form (Lemma~\ref{lem:eig} below): $\bar q[h]=\bar q(h,h)=d\norm h^2=d$.
+\end{proof}
+
+\begin{lemma}[$g$ and $h$ are eigenfunctions]\label{lem:eig}
+$g,h\in\Dom(H_V)$, $H_Vg=0$ and $H_Vh=d\,h$.
+\end{lemma}
+
+\begin{proof}
+Since \eqref{eq:EVform} holds on the linear space $E_V\subset Q$, polarisation gives, for $\varphi,f\in E_V$,
+\[
+\bar q(\varphi,f)=\frac12\int\nabla\bar\varphi\cdot\nabla f+\int V\bar\varphi f .
+\]
+Take $\varphi\in C_c^\infty\subset E_V$ and $f=g$. Because $g\in H^2_{\rm loc}$ we may integrate by parts once, $\tfrac12\int\nabla\bar\varphi\cdot\nabla g=-\tfrac12\int\bar\varphi\,\Delta g$, and $Vg=\tfrac12\Delta g$ a.e.\ by definition of $V$. Hence $\bar q(\varphi,g)=0=\ip\varphi 0$ for all $\varphi\in C_c^\infty$. Both sides are continuous in $\varphi$ with respect to $\norm\cdot_q$ (the left because $\bar q$ is a bounded sesquilinear form on $(Q,\norm\cdot_q)$, the right because $\norm\cdot\le\norm\cdot_q$), and $C_c^\infty$ is dense in $Q$ by construction; so $\bar q(\varphi,g)=\ip\varphi0$ for all $\varphi\in Q$. By the representation theorem \cite[VI, Thm.~2.1(iii)]{Kato}, $g\in\Dom(H_V)$ and $H_Vg=0$.
+
+For $h$: with $\varphi\in C_c^\infty$, $\bar q(\varphi,h)=\tfrac12\int\nabla\bar\varphi\cdot\nabla h+\int V\bar\varphi h=\int\bar\varphi\big(-\tfrac12\Delta h+Vh\big)$, where $\Delta h\in L^2_{\rm loc}$ and $Vh\in L^1_{\rm loc}$ (as $V,h\in L^2_{\rm loc}$); by (H4) the bracket equals $d\,h$ as a distribution, hence a.e. Thus $\bar q(\varphi,h)=d\ip\varphi h$ on $C_c^\infty$, hence on $Q$, and $H_Vh=dh$.
+\end{proof}
+
+\begin{lemma}[Spectral gap]\label{lem:gap}
+For every $f\in Q$,
+\begin{equation}\label{eq:Qgap}
+\bar q[f]\;\ge\;d\big(\norm f^2-|\ip{\hg}{f}|^2\big),\qquad \hg:=g/\sqrt2 .
+\end{equation}
+Consequently $\sigma(H_V)\subset\{0\}\cup[d,\infty)$, $\ker H_V=\mathrm{span}\{g\}$, and $d$ is an eigenvalue of $H_V$ with eigenfunction $h\perp g$.
+\end{lemma}
+
+\begin{proof}
+Let $f\in C_c^\infty$ and $u=f/g$. By the proof of Lemma~\ref{lem:gsr}, $u\in H^1_{\rm loc}$ with $\int g^2|u|^2=\norm f^2<\infty$ and $\int g^2|\nabla u|^2=2q_0[f]<\infty$, so $u\in H^1(g^2)$ and (H5) applies to its real and imaginary parts, which are both in $H^1(g^2)$; adding the two inequalities and using $\int g^2=\norm g^2=2$,
+\[
+q_0[f]=\frac12\int g^2|\nabla u|^2\ge d\Big(\int g^2|u|^2-\frac{|\int g^2u|^2}{\int g^2}\Big)=d\Big(\norm f^2-\frac{|\ip gf|^2}{2}\Big)=d\big(\norm f^2-|\ip{\hg}f|^2\big).
+\]
+Both sides are continuous in $\norm\cdot_q$ and $C_c^\infty$ is dense in $Q$, so \eqref{eq:Qgap} holds on $Q$.
+
+Now $H_V\ge0$ and $H_V g=0$ (Lemma~\ref{lem:eig}), so $0=\inf\sigma(H_V)$. The subspace $g^\perp$ reduces $H_V$ ($g$ is an eigenvector of a self-adjoint operator) and for $f\in Q\cap g^\perp$, \eqref{eq:Qgap} reads $\bar q[f]\ge d\norm f^2$; hence $\inf\sigma(H_V|_{g^\perp})\ge d$ and $\sigma(H_V)\subset\{0\}\cup[d,\infty)$. If $H_Vf=0$, write $f=\alpha\hg+f_\perp$; then $0=\bar q[f]=\bar q[f_\perp]\ge d\norm{f_\perp}^2$, so $f_\perp=0$ and the kernel is one-dimensional. Finally $h\perp g$ by (H3) and $H_Vh=dh$ by Lemma~\ref{lem:eig}.
+\end{proof}
+
+\begin{theorem}[Kohn--Sham representability of $n$ by $V$]\label{thm:A}
+Assume (H1)--(H5). Let $\mathfrak h:=L^2(\R^3;\C^2)$, let $h_V:=H_V\otimes\mathbf 1_{\C^2}$ on $\mathfrak h=L^2(\R^3)\otimes\C^2$, and let
+\[
+H_s(V):=\sum_{i=1}^3(h_V)_i\qquad\text{on }\ \mathcal H_3:=\bigwedge^3\mathfrak h
+\]
+be the three-electron operator, defined as the self-adjoint operator of the closed form $\sum_{i=1}^3\bar q_i$ (the closure of the form sum on the algebraic antisymmetric tensor product of $Q\otimes\C^2$). Then:
+\begin{enumerate}
+\item[(i)] $H_V$ is self-adjoint and nonnegative; $\sigma(H_V)\subset\{0\}\cup[d,\infty)$; $0$ is a simple eigenvalue with eigenfunction $g$, and $d$ is an eigenvalue with eigenfunction $h$.
+\item[(ii)] $H_s(V)$ is self-adjoint, bounded below, and $\inf\sigma(H_s(V))=d$.
+\item[(iii)] The Slater determinant $\Phi:=\hg\!\uparrow\wedge\hg\!\downarrow\wedge h\!\uparrow$ is a ground state of $H_s(V)$, and its spin-summed density is $n_\Phi=2\hg^2+h^2=n$. Hence $n$ is the density of a pure ground state of $H_s(V)$ with Aufbau occupation.
+\item[(iv)] If $V\in\KK$ (in particular if $V\in\VV$), then $Q=H^1(\R^3)$ and $H_V$ is the KLMN form sum $-\tfrac12\Delta\dotplus V$, i.e.\ the operator the preprint denotes $h_V$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) is Definition~\ref{def:HV} together with Lemmas~\ref{lem:eig} and~\ref{lem:gap}.
+
+(ii) $h_V$ is self-adjoint and nonnegative on $\mathfrak h$ with $\sigma(h_V)\subset\{0\}\cup[d,\infty)$, $\ker h_V=\mathrm{span}\{\hg\!\uparrow,\hg\!\downarrow\}$. The $N$-fold sum of copies of a self-adjoint semibounded operator acting on distinct factors is essentially self-adjoint on the algebraic tensor product of the domains and its closure is semibounded \cite[Thm.~VIII.33]{RS1}; restriction to the antisymmetric subspace, which is invariant, gives $H_s(V)$. Its form is $\sum_i\bar q_i$ on the antisymmetric part of $\bigotimes^3(Q\otimes\C^2)$, and $\inf\sigma(H_s(V))=\inf\{\sum_i\bar q_i[\Psi]:\Psi\ \text{normalised, in the form domain}\}$.
+
+\emph{Lower bound.} Let $\Psi$ be a normalised element of the form domain of $H_s(V)$ and let $\gamma_\Psi$ be its one-particle reduced density matrix, $0\le\gamma_\Psi\le\mathbf 1$, $\Tr\gamma_\Psi=3$ (the Pauli bound, preprint Eq.~(5.2)). Write $\gamma_\Psi=\sum_j\lambda_j|\psi_j\rangle\langle\psi_j|$ with orthonormal natural spin orbitals $\psi_j\in Q\otimes\C^2$ (they lie in the form domain since $\sum_i\bar q_i[\Psi]<\infty$; this is the preprint's argument at its Eq.~(5.4), applied to the bounded spectral truncations of $H_V$ and monotone convergence). Then
+\[
+\sum_{i=1}^3\bar q_i[\Psi]=\Tr\big(h_V^{1/2}\gamma_\Psi h_V^{1/2}\big)=\sum_j\lambda_j\,\bar q[\psi_j],
+\]
+where $\bar q[\psi]:=\bar q[\psi_\uparrow]+\bar q[\psi_\downarrow]$ for a spinor. Applying \eqref{eq:Qgap} to each spin component and writing $\tilde P_g:=|\hg\rangle\langle\hg|\otimes\mathbf 1_{\C^2}$ (rank two),
+\[
+\sum_j\lambda_j\bar q[\psi_j]\ \ge\ d\sum_j\lambda_j\big(\norm{\psi_j}^2-\ip{\psi_j}{\tilde P_g\psi_j}\big)=d\big(\Tr\gamma_\Psi-\Tr(\tilde P_g\gamma_\Psi)\big)\ \ge\ d(3-2)=d ,
+\]
+because $\Tr(\tilde P_g\gamma_\Psi)\le\mathrm{rank}(\tilde P_g)\,\norm{\gamma_\Psi}\le2$. Hence $\inf\sigma(H_s(V))\ge d$.
+
+\emph{Upper bound and (iii).} The spin orbitals $\hg\!\uparrow,\hg\!\downarrow,h\!\uparrow$ are orthonormal (H3) and lie in $Q\otimes\C^2$ (Lemma~\ref{lem:EV}), so $\Phi$ is a normalised element of the form domain, and for a determinant of orthonormal orbitals the one-body form is additive:
+\[
+\sum_{i=1}^3\bar q_i[\Phi]=2\,\bar q[\hg]+\bar q[h]=0+0+d=d .
+\]
+Thus $\inf\sigma(H_s(V))=d$ and $\Phi$ attains the infimum of the closed form. For a closed semibounded form with operator $A$ and $E=\inf\sigma(A)$, the square-root representation $\bar q_s[\Psi]-E\norm\Psi^2=\norm{(A-E)^{1/2}\Psi}^2$ \cite[VI, Thm.~2.23]{Kato} shows that a minimiser satisfies $(A-E)^{1/2}\Phi=0$, hence $A\Phi=E\Phi$. So $\Phi$ is a ground state of $H_s(V)$. Its spin-summed density is $\hg^2+\hg^2+h^2=g^2+h^2=n$ by (H3).
+
+(iv) If $V\in\KK$, the form $\tfrac12\norm{\nabla f}^2+\int V|f|^2$ is closed on $H^1(\R^3)$ by KLMN, and $C_c^\infty$ is a core for it because $\norm\cdot_q$ is then equivalent to the $H^1$ norm on $C_c^\infty$ and $C_c^\infty$ is dense in $H^1$. Hence the closure of $q_0$ is this form, $Q=H^1$, and $H_V$ is the KLMN operator. The preprint defines $h_v$ for $v\in\VV\subset\KK$ exactly this way (its Prop.~5.2 and the paragraph after Eq.~(6.5)).
+\end{proof}
+
+\begin{corollary}[Uniqueness in the KLMN class]\label{cor:unique}
+Let $u\in\KK$ and suppose the form sum $H_s(u)=\sum_i\big((-\tfrac12\Delta\dotplus u)\otimes\mathbf 1\big)_i$ has a ground eigenspace supporting an ensemble whose spin-summed density is $n$. Then $u=V+e$ almost everywhere for a real constant $e$.
+\end{corollary}
+
+\begin{proof}
+This is the preprint's Proposition~5.2 with the hypothesis $u\in\VV$ replaced by $u\in\KK$. Its proof uses the potential class in exactly two places: the form bound (its Eq.~(5.13)), which for $u\in\KK$ is \eqref{eq:klmn}, giving finite kinetic energy of every ground-state vector and finite $\int|u|\,n_\Gamma$; and local integrability of $u$ in the final division step $(u-V-e)g=0\Rightarrow u=V+e$, which holds since $u\in L^1_{\rm loc}$ and $g$ is continuous and positive. The ensemble kinetic certificate (its Prop.~5.1) is used unchanged. \qedhere
+\end{proof}
+
+\begin{remark}[What is and is not claimed]\label{rem:scope}
+\begin{enumerate}
+\item Theorem~\ref{thm:A} does not contradict the preprint. Its Theorem~1.1 excludes $v\in\VV$; Theorem~\ref{thm:A} exhibits a representing $V\notin\VV$ (by the preprint's Theorem~6.4), with $H_V$ defined by the canonical Friedrichs construction. The preprint anticipates this possibility in its disclaimer on p.~2.
+\item Corollary~\ref{cor:unique} is a conditional uniqueness statement: any $u\in\KK$ that represents $n$ equals $V$ up to a constant. It does not assert that $V\in\KK$, i.e.\ that a representing potential in $\KK$ exists; that is the subject of Section~\ref{sec:B}. If it holds, Theorem~\ref{thm:A}(iv) applies and the form domain is $H^1$. If it fails, $H_V$ is still a self-adjoint Kohn--Sham Hamiltonian, but its form domain might be strictly larger than $H^1$, and uniqueness beyond $\KK$ would require a separate argument.
+\item The preprint's Proposition~5.2 already shows that \emph{any} representation by a ground-state ensemble of a KLMN potential must use the orbitals $(g,h)$; Theorem~\ref{thm:A} is the converse: these orbitals do represent.
+\item Energies are untouched. By the preprint's Corollary~8.1, $-v_{\rm ext}\in\partial F_{\rm ens}[n]$ and $T_{\rm ens}[n]=d-\int Vn$ is attained; the Kohn--Sham decomposition $E_0=T_s[n]+\int v_{\rm ext}n+E_{\rm Hxc}[n]$ holds with all terms finite. The obstruction concerns only the Lagrange multiplier: no element of $X^*=\VV$ is a subgradient of $T_{\rm ens}$ at $n$. The function $-V$ is a subgradient in the extended sense that $T_{\rm ens}[m]\ge T_{\rm ens}[n]-\int V(m-n)$ for every finite-kinetic-energy density $m$ with $\int|V|m<\infty$: this is the preprint's Proposition~5.1 inequality applied to an arbitrary ensemble with $\Tr\gamma=3$, which never used $n_\Gamma=n$ beyond $\int|V|n_\Gamma<\infty$.
+\end{enumerate}
+\end{remark}
+
+\section{The structure of \texorpdfstring{$V$}{V} along the nodal plane}\label{sec:strip}
+
+Theorem~\ref{thm:A} does not need to know what $V$ looks like. This section describes it, to explain where the preprint's contradiction is evaded and to make precise what Theorem~\ref{thm:B} requires. Proposition~\ref{prop:flux} is an exact statement about a one-dimensional model. The identification of the model with the true potential is a formal reduction (the horizontal variables are frozen) that we do not justify, and the numerics concern the model only; the transfer to the molecule is formulated as Conjecture~\ref{conj:sheet}.
+
+\subsection{What is proved about $V$}
+By (H4), $V\in L^2_{\rm loc}(\R^3)$ and even in $z$; it need not be axisymmetric, because $\theta$ need not be. Away from the nuclei $n$ is smooth and positive (H1), and $\theta$ satisfies $\Delta\theta=-\nabla\log n\cdot\nabla\theta-d\sin 2\theta$ there, so elliptic bootstrapping lifts $\theta$ from $W^{2,p}_{\rm loc}$ to $C^\infty$; hence $V\in C^\infty(\R^3\setminus\{\pm D\mathbf e_z\})$. Near the nuclei $V$ inherits the Kato cusp singularity of $\Delta\sqrt n/(2\sqrt n)$, which is in $L^2_{\rm loc}$ in three dimensions. By the preprint's Theorem~6.4, $V\notin\VV$. In \eqref{eq:Vformula} the first term is the potential in the Levy--Perdew--Sahni equation for $\sqrt n$ (up to the constant $\mu$), and the other two are the corrections that distinguish a two-orbital Kohn--Sham potential from a one-orbital one.
+
+\subsection{An exact vertical decomposition}
+Write $\Delta=\partial_z^2+\Delta_\parallel$ and define the \emph{vertical flux} of the angle field and the \emph{vertical cusp quantity} of the density,
+\begin{equation}\label{eq:JD}
+J:=n\,\partial_z\theta,\qquad D_z:=2n\,\partial_z^2n-(\partial_zn)^2 .
+\end{equation}
+Since $(\sqrt n)_{zz}/(2\sqrt n)=D_z/(8n^2)$ and $(\partial_z\theta)^2/2=J^2/(2n^2)$, formula \eqref{eq:Vformula} becomes, with $c:=d+k^2/2$ and almost everywhere away from the nuclei,
+\begin{equation}\label{eq:Vdecomp}
+V-c=\frac{D_z-4J^2}{8n^2}-d\cos^2\theta+R_\parallel,\qquad R_\parallel:=\frac{\Delta_\parallel\sqrt n}{2\sqrt n}-\frac{k^2}{2}-\frac{|\nabla_\parallel\theta|^2}{2}.
+\end{equation}
+This is exact. On the strip $\{0\le|z|\le L\}$, $p\ge R$, the preprint's Eq.~(3.4) ($|m_p|+|m_{pp}|\le\eta m$ for $m=e^{2kp}n$) gives $|\Delta_\parallel\sqrt n/(2\sqrt n)-k^2/2|\le C\eta+C/p$, so $R_\parallel$ is bounded above there, and it is bounded below exactly when $|\nabla_\parallel\theta|^2$ is bounded above (the density term depends on $\mathbf x_\parallel$ only through $p$, since $n$ is axisymmetric; the angle term may depend on the azimuth). The first term of \eqref{eq:Vdecomp} is where the trench lives.
+
+\subsection{The strip model and the flux identity}
+The preprint's Proposition~3.1 gives, near the plane at large horizontal distance $p$ (its Eqs.~(3.5)--(3.6)),
+\[
+n(p,z)\approx\Big(\frac{A(p)}{p}\Big)^2\big(a^2z^2+\varepsilon(p)^2\big),\qquad \varepsilon(p)=b\,p^{-3},
+\]
+with $a=|a_0'(0)|>0$ the planar slope of the direct removal amplitude (its Eq.~(3.26)) and $b=\lambda\norm{T_{\rm eq}}>0$ the planar coefficient of the complementary channel (its Eqs.~(3.33)--(3.34); the factor $\lambda=1/Z$ is the coupling that drives that channel). Writing $a^2z^2+\varepsilon^2=a^2\big(z^2+(\varepsilon/a)^2\big)$ and renaming $\varepsilon/a\to\varepsilon$, i.e.
+\[
+\varepsilon(p):=\frac{\lambda\norm{T_{\rm eq}}}{a}\,p^{-3},
+\]
+the amplitude becomes $aA(p)/p$ and no rescaling of $z$ is needed. The horizontal Laplacian acting on $e^{-kp}p^m$ contributes $-k^2/2$ to $-\tfrac12\Delta$. Freezing $\mathbf x_\parallel$, keeping only the vertical dependence, and dividing by the amplitude gives a one-dimensional problem for the profiles $G(z)=g/(aA/p)$, $H(z)=h/(aA/p)$:
+\begin{equation}\label{eq:strip}
+\begin{gathered}
+-\tfrac12G''+WG=0,\qquad -\tfrac12H''+WH=dH,\qquad G^2+H^2=N(z):=z^2+\varepsilon^2,\\
+W(z):=V(p,z)-\tfrac{k^2}{2},
+\end{gathered}
+\end{equation}
+with $G$ even and $H$ odd. Within the model, $W\to d$ as $|z|\to\infty$ (Proposition~\ref{prop:flux}(b),(c)); the corresponding constant for the molecule is $c=d+k^2/2$, read off from \eqref{eq:Vformula} and the rate $k$ of $n$. (The preprint's Prop.~6.2 obtains the same constant as a weak-$*$ limit, but under its hypothesis $V\in\VV$, which is not available here.) The preprint's angle construction becomes $G=\sqrt N\cos\theta$, $H=\sqrt N\sin\theta$ with $\theta$ odd, $\theta(0)=0$, $\theta(+\infty)=\pi/2$, solving the one-dimensional version of (H2),
+\begin{equation}\label{eq:angle1d}
+(N\theta')'=-d\,N\sin 2\theta ,
+\end{equation}
+and \eqref{eq:Vformula} becomes $W=(\sqrt N)''/(2\sqrt N)-\theta'^2/2+d\sin^2\theta$.
+
+\begin{proposition}[Exact flux identity in the strip model]\label{prop:flux}
+Let $\varepsilon>0$, $d>0$, $N(z)=z^2+\varepsilon^2$, and let $\theta\in C^2(\R)$ be odd, with $0<\theta<\pi/2$ on $(0,\infty)$, solving \eqref{eq:angle1d}, and $\theta(z)\to\pi/2$ as $z\to\infty$. Put $J:=N\theta'$, $G:=\sqrt N\cos\theta$, $H:=\sqrt N\sin\theta$, and $W:=G''/(2G)$ (well defined since $G>0$). Then:
+\begin{enumerate}
+\item[(a)] $J'=-dN\sin2\theta$, and
+\begin{equation}\label{eq:Gpp}
+G''=\frac{\cos\theta}{N^{3/2}}\Big(\varepsilon^2-J^2+2dN^2\sin^2\theta\Big),\qquad
+H''=\frac{\sin\theta}{N^{3/2}}\Big(\varepsilon^2-J^2-2dN^2\cos^2\theta\Big);
+\end{equation}
+in particular $-\tfrac12G''+WG=0$ and $-\tfrac12H''+WH=dH$ hold with the same $W$.
+\item[(b)] (Flux identity.)
+\begin{equation}\label{eq:fluxid}
+W-d=\frac{\varepsilon^2-J^2}{2N^2}-d\cos^2\theta\qquad\text{on }\R .
+\end{equation}
+\item[(c)] $J$ is nonincreasing on $[0,\infty)$, $J(z)\to0$ as $z\to\infty$, hence $0\le J\le J_0:=\varepsilon^2\theta'(0)$ on $[0,\infty)$, and
+\begin{equation}\label{eq:Jint}
+J(z)=2d\int_z^\infty G(s)H(s)\dd s,\qquad\text{in particular}\qquad J_0=2d\int_0^\infty GH\dd s .
+\end{equation}
+\item[(d)] Consequently, on $[0,\infty)$,
+\[
+-\frac{J_0^2}{2N^2}-d\ \le\ W-d\ \le\ \frac{\varepsilon^2}{2N^2},\qquad\text{and}\qquad W-d\le-d\cos^2\theta\le0\ \text{ wherever }J\ge\varepsilon .
+\]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(a) The first identity is \eqref{eq:angle1d}. For \eqref{eq:Gpp} differentiate $G=\sqrt N\cos\theta$ twice using $\theta'=J/N$, $J'=-2dN\sin\theta\cos\theta$, $N'=2z$ and $N-z^2=\varepsilon^2$:
+\[
+\begin{aligned}
+G'&=\frac{z\cos\theta-J\sin\theta}{\sqrt N}=\frac{zG-JH}{N},\qquad H'=\frac{zH+JG}{N},\qquad J'=-2dGH,\\
+G''&=\frac{\big(\cos\theta-\tfrac{zJ}{N}\sin\theta+2dN\sin^2\theta\cos\theta-\tfrac{J^2}{N}\cos\theta\big)N-z\,(z\cos\theta-J\sin\theta)}{N^{3/2}},
+\end{aligned}
+\]
+and the numerator simplifies to $\cos\theta\,(N-z^2-J^2+2dN^2\sin^2\theta)$. Equivalently, differentiating $G'=(zG-JH)/N$ along the first-order system in the first line and using $G^2+H^2=N$ gives $G''=G\,(\varepsilon^2-J^2+2dNH^2)/N^2$, which is \eqref{eq:Gpp} since $H^2=N\sin^2\theta$. The formula for $H''$ is the same computation with $\cos\theta\leftrightarrow\sin\theta$ and $J\to-J$ in the first-order term. Dividing \eqref{eq:Gpp} by $2G=2\sqrt N\cos\theta$ gives $W=(\varepsilon^2-J^2)/(2N^2)+d\sin^2\theta$ and $H''/(2H)=(\varepsilon^2-J^2)/(2N^2)-d\cos^2\theta=W-d$.
+
+(b) is the last display, since $\sin^2\theta=1-\cos^2\theta$.
+
+(c) On $(0,\infty)$, $0<\theta<\pi/2$ gives $\sin2\theta>0$, so $J'<0$ and $J$ is decreasing; let $J_\infty\in[-\infty,J_0)$ be its limit. If $J_\infty<0$ then $\theta'=J/N<0$ for large $z$, so $\theta$ is eventually decreasing; a decreasing function bounded above by $\pi/2$ cannot converge to $\pi/2$ unless it is eventually $\ge\pi/2$, which is excluded. So $J_\infty\ge0$. If $J_\infty>0$, then for $z\ge\varepsilon$,
+\[
+\frac\pi2-\theta(z)=\int_z^\infty\frac{J}{N}\dd s\ \ge\ J_\infty\int_z^\infty\frac{\dd s}{s^2+\varepsilon^2}=\frac{J_\infty}{\varepsilon}\arctan\frac\varepsilon z\ \ge\ \frac{J_\infty}{2z},
+\]
+and for $z$ so large that $\theta\ge\pi/4$, Jordan's inequality gives $\sin2\theta=\sin\big(2(\tfrac\pi2-\theta)\big)\ge\tfrac2\pi\cdot2(\tfrac\pi2-\theta)\ge\tfrac{2J_\infty}{\pi z}$, whence $J'\le-\tfrac{2dJ_\infty}{\pi}\,\tfrac{N}{z}\le-\tfrac{2dJ_\infty}{\pi}\,z$, contradicting the boundedness of $J$ from below. Hence $J_\infty=0$, so $J\ge0$, and integrating $J'=-2dGH$ from $z$ to $\infty$ gives \eqref{eq:Jint}.
+
+(d) Insert $0\le J\le J_0$ and $0\le\cos^2\theta\le1$ into \eqref{eq:fluxid}.
+\end{proof}
+
+\subsection{Numerical solution}
+The boundary value problem \eqref{eq:angle1d} is solved by shooting on $\theta'(0)$: the first-order system for $(\theta,J)$ is integrated on $[0,Z_{\rm bc}]$, $Z_{\rm bc}=12/\sqrt{2d}$, with Dormand--Prince 8(5,3) (relative tolerance $10^{-12}$, absolute $10^{-30}$), in the variables $(\phi,J)$ with $\phi:=\pi/2-\theta$, so that the relative tolerance applies to $\phi$ where it is small. The global branch is selected by the far-field decay condition, not by $\theta(Z_{\rm bc})=\pi/2$, which no solution of the global branch satisfies at a finite point (by Proposition~\ref{prop:flux}(c), $\theta<\pi/2$ and $J>0$ everywhere on it). With $\phi:=\pi/2-\theta$, the linearisation of \eqref{eq:angle1d} for $z\gg\varepsilon$ is $(z^2\phi')'=2dz^2\phi$, with solutions $e^{\mp\kappa z}/z$, $\kappa=\sqrt{2d}$; the decaying one satisfies $J=-N\phi'=N\phi\,(\kappa+1/z)$. We bisect on $\theta'(0)$ until $r_{\rm bc}:=J(Z_{\rm bc})-N(Z_{\rm bc})\phi(Z_{\rm bc})(\kappa+1/Z_{\rm bc})$ changes sign ($r_{\rm bc}>0$ corresponds to a growing mode with negative coefficient, i.e.\ overshoot). Because the growing mode amplifies solver error along the integration, all quantities are reported on $[-Z,Z]$ with $Z=8/\sqrt{2d}$ rather than up to $Z_{\rm bc}$. Table~\ref{tab:diag} records the end values $J(Z)>0$ and $\pi/2-\theta(Z)>0$ (asserted by the script) and the relative residual $r$ of the decay condition at $Z$; in the linearised two-mode description $\phi=(Ae^{-\kappa z}+Be^{\kappa z})/z$ with $N\simeq z^2$, the ratio of the growing to the decaying amplitude at $Z$ is $Be^{\kappa Z}/(Ae^{-\kappa Z})=-9R/(16-7R)$ at $\kappa Z=8$, where $R$ is the signed residual, so its magnitude is $9r/16+O(r^2)$ (the cruder $r/2$ is the further approximation $\kappa Z\to\infty$). Its values, at most $4\cdot10^{-5}$ in all runs, are a diagnostic inference, not a validated error estimate. The script \texttt{trench\_model.py} at the repository root is the only numerical code used; \texttt{trench\_model.py --table} writes Tables~\ref{tab:strip} and~\ref{tab:diag} to \texttt{paper/table\_strip.tex} and \texttt{paper/table\_diag.tex}, which the manuscript reads, so no value is transcribed by hand. Integrals are taken over $[-Z,Z]$ on a graded mesh (4000 points on $[0,20\varepsilon]$, 6000 geometrically spaced points beyond).
+
+The column ``tail (est.)'' is an \emph{a posteriori estimate} of the omitted integral over $|z|>Z$, obtained by inserting the computed end values into inequalities that hold for the exact solution by Proposition~\ref{prop:flux}(c),(d): for $z\ge Z$, $|W-d|\le(\varepsilon^2+J(Z)^2)/(2z^4)+d\cos^2\theta$, and, since $\theta\ge\pi/4$ beyond $Z$ and $J'=-2dGH$ with $J\ge0$, $\int_Z^\infty d\cos^2\theta\le J(Z)/(\sqrt2\,N(Z))$; hence $\int_{|z|>Z}|W-d|\le2\big[(\varepsilon^2+J(Z)^2)/(6Z^3)+J(Z)/(\sqrt2\,N(Z))\big]$. These inequalities are theorems about the infinite-domain solution. The computed solution is not a validated enclosure of that solution, and no interval-arithmetic or a posteriori error bound connecting the two is supplied; the column is therefore an estimate, not a rigorous bound. The column ``conv'' reports the larger of the changes in $\int|W-d|$ when the tolerance is relaxed to $10^{-10}$ and when $Z_{\rm bc}$ is increased to $16/\sqrt{2d}$; such variations measure the stability of the computation, not its distance from the exact solution. Two implementation checks are also made: the finite-difference identity $W=G''/(2G)$ on the inner mesh (agreement to $3\cdot10^{-5}$, and $8\cdot10^{-5}$ in the last row) and the agreement of the two algebraically equivalent formulas for $W$ (to $10^{-11}$); the latter checks the implementation, not the mathematics. Finite samples such as these cannot establish the limit $\varepsilon\to0$; they are evidence for the model statements below.
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{2.6pt}
+\input{table_strip.tex}
+\caption{Strip model (with $\varepsilon$ already divided by $a$ as in Section~\ref{sec:strip}); generated by \texttt{trench\_model.py --table}. Integrals are over $[-Z,Z]$, $Z=8/\sqrt{2d}$. The fourth column approaches $-2/\pi=-0.63662$ and the fifth approaches $-\sqrt{2d}$ as $\varepsilon$ decreases; the eighth column is the integrated positive part of $W-d$, so the sixth column equals minus the fifth plus twice the eighth. ``tail (est.)'' is the a posteriori estimate of the omitted integral over $|z|>Z$ described in the text (not a validated bound); ``conv'' is the stability check described in the text.}\label{tab:strip}
+\end{table}
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{2.6pt}
+\input{table_diag.tex}
+\caption{Diagnostics for the same runs, generated by the same script. $J_0/\varepsilon-1$ measures the cancellation of the $\varepsilon^{-2}$ ridge, and the fourth column compares it with $(2/\pi)\sqrt{2d}\,\varepsilon$. $K_\varepsilon:=\max_{|z|\le1}|\varepsilon^2-J^2|/(\varepsilon N)$ is the normalised flux ratio of Lemma~\ref{lem:flux}(a). ``surf'' is $\max_{1/\kappa\le z\le3/\kappa}|G(z)e^{\kappa z}/G(0)-1|$ with $\kappa=\sqrt{2d}$; ``prof'' is $\max_{0\le s\le3}\big|\varepsilon(W-d)(\varepsilon s)/(-(2/\pi)\sqrt{2d})-(1+s^2)^{-2}\big|$. The last three columns are the end values at $Z$ and the relative residual $r:=|J(Z)-N(Z)(\pi/2-\theta(Z))(\kappa+1/Z)|/J(Z)$ of the decay condition there.}\label{tab:diag}
+\end{table}
+
+The picture that emerges, as $\varepsilon\to0$:
+\begin{enumerate}
+\item \emph{Cancellation of the leading singularity.} $(\sqrt N)''/(2\sqrt N)=\varepsilon^2/(2N^2)$ is a repulsive ridge of height $1/(2\varepsilon^2)\sim p^6$ on the plane; this is the polynomial divergence of the potential in the $\sqrt n$ equation found by Gori-Giorgi and Baerends \cite{GB18}, with its sign fixed as $+\infty$. By \eqref{eq:fluxid} it would be cancelled to leading order if $J_0=\varepsilon(1+O(\varepsilon))$. Numerically $J_0/\varepsilon-1=0.0284,\ 0.00285,\ 0.000285$ for $\varepsilon=10^{-1},10^{-2},10^{-3}$ at $d=0.1$ (Table~\ref{tab:diag}), consistent with $J_0-\varepsilon\approx(2/\pi)\sqrt{2d}\,\varepsilon^2$ (fourth column of Table~\ref{tab:diag}); this relation is observed, not proved.
+\item \emph{The trench.} Two distinct statements are suggested by the tables, neither of which is proved. The first is a limit of measures on the strip: writing $W_\varepsilon$ for the model potential,
+\begin{equation}\label{eq:sheet}
+(W_\varepsilon-d)\,\dd z\ \rightharpoonup\ -\sqrt{2d}\,\delta_0\qquad(\varepsilon\to0)\quad\text{weakly-$*$ as measures on }[-1,1],
+\end{equation}
+i.e.\ $\int_{-1}^{1}\phi\,(W_\varepsilon-d)\dd z\to-\sqrt{2d}\,\phi(0)$ for every continuous $\phi$; the fifth column of Table~\ref{tab:strip} tests the case $\phi\equiv1$ (the contribution of $1<|z|\le Z$ is negligible by Proposition~\ref{prop:flux}(d), since $J\le J_0$ and $\cos\theta$ is exponentially small there). The second is a statement about the rescaled inner profile,
+\begin{equation}\label{eq:profile}
+\varepsilon\,(W_\varepsilon-d)(\varepsilon s)\ \to\ -\frac{2}{\pi}\sqrt{2d}\,\frac{1}{(1+s^2)^2}\qquad(\varepsilon\to0)\quad\text{locally uniformly in }s ,
+\end{equation}
+whose right-hand side has integral $-\sqrt{2d}$; the fourth column of Table~\ref{tab:strip} tests $s=0$ and the column ``prof'' of Table~\ref{tab:diag} the range $0\le s\le3$ (maximal deviations $0.047,\ 0.0044,\ 0.00043$ for $\varepsilon=10^{-1},10^{-2},10^{-3}$ at $d=0.1$). Heuristically, \eqref{eq:profile} follows from \eqref{eq:fluxid} if $J_0-\varepsilon=(2/\pi)\sqrt{2d}\,\varepsilon^2(1+o(1))$ and $J(z)=J_0-d\varepsilon z^2(1+o(1))$ on $|z|\lesssim\varepsilon$, which make $\theta\approx\arctan(z/\varepsilon)$ there. Within the model, then, the trench is a well of depth $\propto\varepsilon^{-1}$, width $\propto\varepsilon$ and area tending to $\sqrt{2d}$. If this transfers to the molecule with $\varepsilon(p)\propto p^{-3}$ (Conjecture~\ref{conj:sheet}), $V$ carries an attractive sheet along the plane of depth $\propto p^{3}$, width $\propto p^{-3}$ and strength $\sqrt{2d}$, and in particular $V$ is unbounded below although $H_V\ge0$.
+\item \emph{Vertical $L^1$ norms.} The computed values of $\int_{-Z}^{Z}|W-d|\dd z$ are $0.4658,\ 0.4491,\ 0.4474$ for $\varepsilon=10^{-1},10^{-2},10^{-3}$ at $d=0.1$ (sixth column): bounded in the range computed and decreasing towards $\sqrt{2d}=0.4472$ from above. Thus $\sqrt{2d}$ is a conjectured limit, not a demonstrated uniform bound; the first row exceeds it. Two limits are involved and must be kept apart: \eqref{eq:sheet} with $\phi\equiv1$ concerns the signed integral, $\int(W_\varepsilon-d)\dd z\to-\sqrt{2d}$ (fifth column), and does not imply the limit $\int|W_\varepsilon-d|\dd z\to\sqrt{2d}$ of the absolute integral, since weak convergence of signed measures can conceal cancellation; the latter is a separate model conjecture, requiring in addition that the integrated positive part $\int(W_\varepsilon-d)_+\dd z$ (eighth column) vanish in the limit. Conjecture~\ref{conj:sheet} states the two for the molecule separately. The normalised flux ratio $K_\varepsilon$ of Table~\ref{tab:diag}, which controls these integrals by Lemma~\ref{lem:flux}(a), is likewise bounded in the range computed and approaches $(4/\pi)\sqrt{2d}$, which equals $0.5694$ for $d=0.1$, $0.1801$ for $d=0.01$ and $0.0569$ for $d=0.001$. This is evidence for Conjecture~\ref{conj:B} within the model, not a proof; the limit $\varepsilon\to0$ of the model is not analysed here.
+\item \emph{Surface state.} On $1/\kappa\le z\le3/\kappa$, $\kappa=\sqrt{2d}$, the maximal relative deviation of $G(z)/G(0)$ from $e^{-\kappa z}$ is $0.028,\ 0.0028,\ 0.00029$ for $\varepsilon=10^{-1},10^{-2},10^{-3}$ at $d=0.1$, and $9\cdot10^{-5}$, $3\cdot10^{-5}$ in the last two rows (column ``surf'' of Table~\ref{tab:diag}); it shares the leading scaling $\propto\varepsilon$ of $J_0/\varepsilon-1$, the ratio of the two being $0.967$, $0.996$, $1.000$, $1.000$, $1.000$ down the rows of the table. So, within the model and up to $O(\varepsilon)$, the doubly occupied orbital is a surface state bound to the plane with binding energy $d$, decaying along the plane at the rate $k$ of the whole density and away from it at the rate $\sqrt{2d}$. This is the model's version of the on-plane behaviour of $n$ established in the preprint's Prop.~3.1 (its Eqs.~(3.5)--(3.6)): $g$ carries the on-plane tail $\propto A(p)p^{-4}$ while being $o(A/p)$ at every fixed $z\ne0$. The strength $\sqrt{2d}$ is exactly the zero-energy bound-state condition of the limiting operator $-\tfrac12\partial_z^2+d-\gamma\delta(z)$, $\gamma=\sqrt{2d}$.
+\item \emph{Where the preprint's argument is evaded.} The preprint's Section~6 assumes a decomposition $V=V_c+V_b$ with $V_c\in L^{3/2}$, $V_b\in L^\infty$, and uses two consequences of it: the $L^{3/2}$ norms of $V_c$ on unit balls tend to zero along the plane, and the translates of $V_b$ have weak-$*$ convergent subsequences in $L^\infty$, whose limit its Prop.~6.2 identifies as the constant $c$; together these give its Lemma~6.3, Eq.~(6.10), $\sup_{\norm u_{H^1(B)}\le1}|\int(V(\mathbf y+\mathbf x)-c)|u|^2|\to0$ along the plane. A sheet of the form $-\sqrt{2d}\,\delta_{\varepsilon(p)}(z)$, $\delta_\varepsilon(z):=(2/\pi)\varepsilon^3/(z^2+\varepsilon^2)^2$, admits no such decomposition: its $L^\infty$ norm grows like $\varepsilon(p)^{-1}$ and its $L^{3/2}$ norm on unit balls like $\varepsilon(p)^{-1/3}$, so neither term can absorb it, and the preprint's Eq.~(6.10) fails for it because $\int\delta_\varepsilon|u|^2\to\int_{z=0}|u|^2$, the $H^1$ trace, which is bounded but not small. In the topology of measures the translates of $V-c$ would converge to the nonzero sheet measure $-\sqrt{2d}\,\delta(z)$. The quadratic form, by contrast, controls the sheet through its vertical $L^1$ norm alone (Lemma~\ref{lem:sheet}). This description presupposes Conjecture~\ref{conj:sheet}; what is proved is only that $V\notin\VV$ (preprint, Theorem~6.4) together with Theorem~\ref{thm:A}.
+\item \emph{Spectrum.} In the limiting sheet model the one-particle essential spectrum starts at $c-d=k^2/2\approx0.49$ (the surface continuum), far above $d<10^{-3}$, consistent with Lemma~\ref{lem:gap}. For the molecule this is Conjecture~\ref{conj:ess}; it would require an asymptotic spectral analysis beyond the strip bound.
+\end{enumerate}
+
+\section{Theorem B: the form domain}\label{sec:B}
+
+\subsection{Sheet potentials are form-bounded}
+\begin{definition}
+Let $\SS$ be the set of real measurable $s$ on $\R^3$ supported in $\{|z|\le1\}$ with $\norm s_\SS:=\operatorname*{ess\,sup}_{\mathbf x_\parallel\in\R^2}\int_{-1}^{1}|s(\mathbf x_\parallel,z)|\dd z<\infty$.
+\end{definition}
+
+\begin{lemma}\label{lem:sheet}
+$\VV+\SS\subset\KK_\infty$: every element is infinitesimally form-bounded.
+\end{lemma}
+\begin{proof}
+For $s\in\SS$ with $M:=\norm s_\SS$ and $f\in H^1(\R^3)$, by Fubini and the one-dimensional inequality $\sup_z|\phi(z)|^2\le\eta\int|\phi'|^2\dd z+\eta^{-1}\int|\phi|^2\dd z$, valid for $\phi\in H^1(\R)$ and every $\eta>0$ (from $|\phi(z_0)|^2=-\int_{z_0}^\infty(|\phi|^2)'\le2\norm\phi\norm{\phi'}$ and $2ab\le\eta a^2+b^2/\eta$),
+\[
+\int|s||f|^2\le M\int\dd\mathbf x_\parallel\,\sup_z|f(\mathbf x_\parallel,z)|^2\le M\big(\eta\norm{\partial_zf}^2+\eta^{-1}\norm f^2\big).
+\]
+The $\VV$ part is infinitesimally form-bounded by the preprint's Eq.~(5.13).
+\end{proof}
+
+\subsection{Off-plane boundedness from the channel expansion}
+The preprint's Section~3 describes $n$ far from the nuclei through a fibre expansion $F_{\rm true}(\mathbf x)=\sqrt3\,\Psi(\mathbf x,\cdot)$ with values in the ionic Hilbert space, split into the direct (slow) channel $f=\ip{\Phi}{F}$ and the complementary channel $QF$, so that $n=f^2+\norm{QF}^2+e$ with $e$ the cutoff error. We extract the following consequences; the equation numbers refer to the preprint, at the fixed charge of its Theorem~1.1 (its Prop.~3.5).
+
+\begin{estimate}[Channel structure; preprint Lemmas 3.2--3.4]\label{est:C}
+There are $R_0$, $c>0$, $C$ and $\tau>k$ such that on $\{r\ge R_0\}$ one has $n=f^2+q+e$ with $f,q,e\in C^2$, $q\ge0$, and for all multi-indices $|\beta|\le2$:
+\begin{enumerate}
+\item[(C1)] $f$ is odd in $z$, $|f|\ge c\,A(r)|t|$, and $|\partial^\beta f|\le C\,A(r)\big(|t|+r^{-1}\big)$. [Lemma~3.3: $f=A(a_0+a_1/r+a_2/r^2+E)$ with $a_j$ smooth and odd on $S^2$, $\inf_{t>0}a_0/t>0$ (Eq.~(3.26)), $E=O(r^{-3})$ with the stated radial and angular derivative bounds and the odd factor $|t|$ (Eq.~(3.25)); $A'=(-k+\beta/r)A$.]
+\item[(C2)] $|\partial^\beta q|\le C\,A(r)^2r^{-4}$. [Eq.~(3.33): $QF=bG+A(T_2r^{-2}+T_3r^{-3}+T_4r^{-4})+E_Q$ with smooth localised $T_j$, $\norm{\partial^\alpha E_Q}\le CAr^{-5}$ for $|\alpha|\le2$, and $b=o(Ar^{-4})$ with its derivatives (Eq.~(3.38)).]
+\item[(C3)] $|\partial^\beta e|\le C\,e^{-2\tau r}$. [Eq.~(3.14).]
+\end{enumerate}
+\end{estimate}
+
+\begin{proposition}[Off-plane boundedness]\label{prop:E1}
+Assume (H1)--(H5) and Estimate~\ref{est:C}. There are $R_1$ and $C_1$ such that
+\[
+|V(\mathbf x)|\le C_1\qquad\text{for all }\mathbf x\text{ with }|z|\ge\tfrac12,\ r\ge R_1 .
+\]
+\end{proposition}
+
+\begin{proof}
+\emph{Step 1: $n$ is controlled by itself on $\Omega_R:=\{|z|\ge\tfrac14,\ r\ge R\}$.} On $\Omega_R$, $|t|\ge1/(4r)$, so $|t|+r^{-1}\le5|t|$ and (C1) gives $|\partial^\beta f|\le5C\,A|t|\le(5C/c)|f|$ for $|\beta|\le2$. Also $A^2t^2\ge e^{-2kr}r^{2\beta-2}/16$, which dominates $e^{-2\tau r}$ and $A^2r^{-4}\cdot r^2$ for $r\ge R$ large, since $\tau>k$. Hence for $R$ large, on $\Omega_R$:
+\[
+\begin{gathered}
+n\ge f^2-|e|\ge\tfrac12f^2\ge\tfrac{c^2}{2}A^2t^2,\\
+|\partial^\beta n|\le|\partial^\beta(f^2)|+|\partial^\beta q|+|\partial^\beta e|\le C'f^2+CA^2r^{-4}+Ce^{-2\tau r}\le C''n ,
+\end{gathered}
+\]
+using $\partial_i(f^2)=2f\partial_if$ and $\partial_{ij}(f^2)=2\partial_if\partial_jf+2f\partial_{ij}f$. Consequently $|\nabla\log n|\le C''$ and
+\[
+\Big|\frac{\Delta\sqrt n}{\sqrt n}\Big|=\Big|\frac{\Delta n}{2n}-\frac{|\nabla n|^2}{4n^2}\Big|\le C_2\qquad\text{on }\Omega_R .
+\]
+
+\emph{Step 2: gradient bound for $\theta$.} Let $\mathbf x_0$ satisfy $|z_0|\ge\tfrac12$, $r_0\ge R+1$, so that $B:=B(\mathbf x_0,\tfrac14)\subset\Omega_R$. By (H2), $\theta\in W^{2,4}(B)$ is a strong solution of
+\[
+\Delta\theta+\mathbf b\cdot\nabla\theta=-d\sin2\theta,\qquad \mathbf b:=\nabla\log n,\quad\norm{\mathbf b}_{L^\infty(B)}\le C'' ,
+\]
+since $\divg(n\nabla\theta)=n\Delta\theta+\nabla n\cdot\nabla\theta$ for $\theta\in W^{2,p}_{\rm loc}$ and $n\in C^1$. The interior $L^p$ estimate for strong solutions \cite[Thm.~9.11]{GT} with $p=4$ gives
+\[
+\norm\theta_{W^{2,4}(B(\mathbf x_0,1/8))}\le C_3\Big(\norm\theta_{L^4(B)}+\norm{d\sin2\theta}_{L^4(B)}\Big)\le C_3\,(\tfrac\pi2+d)\,|B|^{1/4},
+\]
+where $C_3$ depends only on the dimension, $p$, the radii, and $\norm{\mathbf b}_\infty\le C''$; it is independent of $\mathbf x_0$. By Morrey's embedding $W^{2,4}\hookrightarrow C^{1,1/4}$ on $B(\mathbf x_0,1/8)$, $|\nabla\theta(\mathbf x_0)|\le C_4$.
+
+\emph{Step 3.} By \eqref{eq:Vformula}, a.e.\ on $\{|z|\ge\tfrac12,\ r\ge R+1\}$, $|V|\le\tfrac12C_2+\tfrac12C_4^2+d=:C_1$; since $V$ is continuous there, the bound holds everywhere.
+\end{proof}
+
+\subsection{The strip estimate and Theorem B}
+
+\begin{estimate}[Uniform vertical $L^1$ bound across the plane]\label{est:E2}
+There are $R_2$ and $C_5$ such that
+\[
+\operatorname*{ess\,sup}_{|\mathbf x_\parallel|\ge R_2}\int_{-1}^{1}|V(\mathbf x_\parallel,z)|\dd z\le C_5 .
+\]
+(This is a uniform bound on vertical $L^1$ norms; it permits, and in the model is realised by, concentration of a fixed mass on sets of vanishing measure, so it is not uniform integrability in the measure-theoretic sense.)
+\end{estimate}
+
+\begin{lemma}[Reduction of Estimate~\ref{est:E2}]\label{lem:reduce}
+Assume (H1)--(H5), Estimate~\ref{est:C}, and the preprint's strip bound (3.4). Then Estimate~\ref{est:E2} holds provided
+\begin{equation}\label{eq:E2ab}
+\operatorname*{ess\,sup}_{|\mathbf x_\parallel|\ge R}\int_{-1}^{1}|\nabla_\parallel\theta(\mathbf x_\parallel,z)|^2\dd z<\infty\qquad\text{and}\qquad
+\operatorname*{ess\,sup}_{|\mathbf x_\parallel|\ge R}\int_{-1}^{1}\frac{|D_z-4J^2|}{8n^2}(\mathbf x_\parallel,z)\dd z<\infty .
+\end{equation}
+\end{lemma}
+\begin{proof}
+By \eqref{eq:Vdecomp}, $|V|\le|c|+|D_z-4J^2|/(8n^2)+d+|\Delta_\parallel\sqrt n/(2\sqrt n)-k^2/2|+|\nabla_\parallel\theta|^2/2$, and the fourth term is bounded on the strip by the preprint's (3.4) as noted after \eqref{eq:Vdecomp}. Integrate over $z\in[-1,1]$.
+\end{proof}
+
+\begin{theorem}[Form domain and uniqueness]\label{thm:B}
+Assume (H1)--(H5), Estimate~\ref{est:C} and Estimate~\ref{est:E2}. Then:
+\begin{enumerate}
+\item[(i)] $V\in L^{3/2}(\R^3)+L^\infty(\R^3)+\SS$; more precisely $V=V\mathbf 1_{B}+V\mathbf 1_{\{|z|\ge1\}\setminus B}+V\mathbf 1_{\{|z|<1\}\setminus B}$ for a ball $B$, with the three terms in $L^2\subset L^{3/2}$, $L^\infty$ and $\SS$ respectively.
+\item[(ii)] $V\in\KK_\infty$: for every $\alpha>0$ there is $C_\alpha$ with $\int|V||f|^2\le\tfrac\alpha2\norm{\nabla f}^2+C_\alpha\norm f^2$, $f\in H^1(\R^3)$.
+\item[(iii)] $Q=\Dom(\bar q)=H^1(\R^3)$ with equivalent norms, and $H_V$ is the KLMN form sum $-\tfrac12\Delta\dotplus V$; in particular $\Dom(H_V)=\{f\in H^1:-\tfrac12\Delta f+Vf\in L^2\}$ and $H_V$ acts as $-\tfrac12\Delta+V$ in the sense of distributions.
+\item[(iv)] $V$ is, up to an additive constant, the unique $u\in\KK$ for which some ground-state ensemble of $H_s(u)$ has density $n$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) Let $R:=\max(R_1,R_2)+2$ and $B:=B(0,R)$. $V\mathbf 1_B\in L^2(B)\subset L^{3/2}(B)$ by (H4) and H\"older on the bounded set $B$. On $\{|z|\ge1\}\setminus B$ we have $|z|\ge\tfrac12$ and $r\ge R_1$, so $|V|\le C_1$ by Proposition~\ref{prop:E1}. On $\{|z|<1\}\setminus B$ we have $|\mathbf x_\parallel|\ge\sqrt{R^2-1}\ge R_2$, so $\int_{-1}^1|V\mathbf 1_{\{|z|<1\}\setminus B}|\dd z\le C_5$ for a.e.\ such $\mathbf x_\parallel$ by Estimate~\ref{est:E2}, i.e.\ this term is in $\SS$. (ii) follows from (i) and Lemma~\ref{lem:sheet}. (iii) is Theorem~\ref{thm:A}(iv); the description of the operator domain is the KLMN theorem \cite[Thm.~X.17]{RS2} together with the fact that for $f\in H^1$ the form identity $\bar q(\varphi,f)=\ip\varphi{w}$ for all $\varphi\in C_c^\infty$ means $-\tfrac12\Delta f+Vf=w$ in $\mathcal D'$. (iv) is Corollary~\ref{cor:unique} applied with $u=V$ for existence (Theorem~\ref{thm:A}(iii)) and with arbitrary $u\in\KK$ for uniqueness.
+\end{proof}
+
+\subsection{Status of Estimate~\ref{est:E2}}
+Estimate~\ref{est:E2} is not proved here. Lemma~\ref{lem:reduce} reduces it to \eqref{eq:E2ab}; the following lemma states which property of the flux is sufficient for the second condition there, in normalised form, and what that property means in the model. Write $N_\varepsilon(z):=z^2+\varepsilon^2$.
+
+\begin{lemma}[Sufficient flux condition]\label{lem:flux}
+\begin{enumerate}
+\item[(a)] (Model.) In the setting of Proposition~\ref{prop:flux},
+\[
+\Big|\int_{-1}^{1}|W-d|\dd z-\int_{-1}^{1}\frac{|\varepsilon^2-J^2|}{2N^2}\dd z\Big|\le2d .
+\]
+If moreover $|\varepsilon^2-J(z)^2|\le K\varepsilon N(z)$ for $|z|\le1$, then $\int_{-1}^{1}|W-d|\dd z\le K\pi/2+2d$.
+\item[(b)] (Model; necessity at the plane.) If $\int_{-1}^{1}|\varepsilon^2-J^2|/(2N^2)\dd z\le M$ and $\varepsilon\le1$, then $|\varepsilon^2-J_0^2|\le4(M+dJ_0)\varepsilon^3$; consequently $|J_0-\varepsilon|\le4(M+d)\varepsilon^2$ for $\varepsilon$ small, i.e.\ $J_0=\varepsilon+O(\varepsilon^2)$.
+\item[(c)] (Molecule.) Suppose there are $R$, $K$ and a function $\varepsilon\colon[R,\infty)\to(0,1]$ such that, for a.e.\ $\mathbf x_\parallel$ with $|\mathbf x_\parallel|\ge R$ and a.e.\ $|z|\le1$,
+\begin{equation}\label{eq:F3}
+|D_z-4J^2|(\mathbf x_\parallel,z)\ \le\ K\,\varepsilon(|\mathbf x_\parallel|)\,\frac{n(\mathbf x_\parallel,z)^2}{N_{\varepsilon(|\mathbf x_\parallel|)}(z)} .
+\end{equation}
+Then the second condition in \eqref{eq:E2ab} holds with bound $K\pi/8$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(a) By \eqref{eq:fluxid}, $\big||W-d|-|\varepsilon^2-J^2|/(2N^2)\big|\le d\cos^2\theta\le d$ pointwise; integrate over $[-1,1]$. Under the hypothesis, $\int_{-1}^{1}|\varepsilon^2-J^2|/(2N^2)\dd z\le\tfrac{K\varepsilon}{2}\int_\R\frac{\dd z}{z^2+\varepsilon^2}=\tfrac{K\pi}{2}$.
+
+(b) For $|z|\le\varepsilon$ we have $|J'|=dN|\sin2\theta|\le2d\varepsilon^2$, so $|J(z)-J_0|\le2d\varepsilon^3$ and, since $0\le J\le J_0$ (Proposition~\ref{prop:flux}(c)), $|J_0^2-J(z)^2|\le4dJ_0\varepsilon^3$; also $N\le2\varepsilon^2$ there. Hence $|\varepsilon^2-J^2|/(2N^2)\ge(|\varepsilon^2-J_0^2|-4dJ_0\varepsilon^3)/(8\varepsilon^4)$ on $[-\varepsilon,\varepsilon]$, and integrating,
+\[
+M\ \ge\ \frac{|\varepsilon^2-J_0^2|-4dJ_0\varepsilon^3}{4\varepsilon^3},
+\]
+which is the first claim. If $J_0\ge\varepsilon$ it gives $J_0^2-4d\varepsilon^3J_0-\varepsilon^2-4M\varepsilon^3\le0$, hence $J_0\le2d\varepsilon^3+\sqrt{\varepsilon^2+4M\varepsilon^3+4d^2\varepsilon^6}\le\varepsilon+2M\varepsilon^2+2d\varepsilon^3+2d^2\varepsilon^5$; if $J_0<\varepsilon$ it gives $\varepsilon-J_0\le4(M+d\varepsilon)\varepsilon^3/(\varepsilon+J_0)\le4(M+d)\varepsilon^2$.
+
+(c) Divide \eqref{eq:F3} by $8n^2$ and integrate in $z$: $\int_{-1}^{1}\frac{|D_z-4J^2|}{8n^2}\dd z\le\frac{K\varepsilon}{8}\int_\R\frac{\dd z}{z^2+\varepsilon^2}=\frac{K\pi}{8}$.
+\end{proof}
+
+\begin{remark}[Normalisation]\label{rem:norm}
+In the model scaling of Section~\ref{sec:strip}, $n\simeq C(p)\,N_{\varepsilon(p)}(z)$ with $C(p)=(aA(p)/p)^2$, so that $D_z\simeq4C(p)^2\varepsilon(p)^2$ and $J\simeq C(p)\,J_{\rm model}$; then \eqref{eq:F3} reads $|\varepsilon^2-J_{\rm model}^2|\le\tfrac K4\,\varepsilon N_\varepsilon$, the hypothesis of (a). Since $C(p)$ decays exponentially, the condition must be formulated in normalised quantities: $J$ and $\sqrt{D_z}/2$ are both of size $C(p)\varepsilon(p)$, so an additive allowance of order $\varepsilon(p)^2$ on the unnormalised flux would be vacuous. The requirement at the plane is best expressed through the exact density. On $z=0$, evenness gives $\partial_zn=0$, hence $D_z=2n\,\partial_z^2n$. Positivity of $\partial_z^2n$ on the plane, for $p$ large, comes from the channel expansion of Estimate~\ref{est:C} rather than from evenness: since $f$ is odd, $\partial_z^2(f^2)=2(\partial_zf)^2$ on $z=0$, where the direct-channel expansion gives $\partial_zf(\mathbf x_\parallel,0)=\pm aA(p)/p+O(A(p)/p^2)$, while (C2) and (C3) bound $\partial_z^2q$ by $O(A(p)^2p^{-4})$ and $\partial_z^2e$ by an exponentially smaller term; and the planar complementary expansion (preprint Eqs.~(3.5)--(3.6) and (3.33)--(3.34)) gives $n(\mathbf x_\parallel,0)=q+e$ on the plane. Together, for $p\ge R$,
+\[
+n(\mathbf x_\parallel,0)=C(p)\varepsilon(p)^2\big(1+O(p^{-1})\big),\qquad
+\partial_z^2n(\mathbf x_\parallel,0)=2C(p)\big(1+O(p^{-1})\big)>0 ,
+\]
+so $D_z(\mathbf x_\parallel,0)>0$ and the effective offset $\varepsilon_*(\mathbf x_\parallel)^2:=2n/\partial_z^2n$ (evaluated at $z=0$) is well defined, with $\varepsilon_*=\varepsilon(p)\big(1+O(p^{-1})\big)$. Write $J(\mathbf x_\parallel,0)=\tfrac12\sqrt{D_z(\mathbf x_\parallel,0)}\,(1+\rho)$. Then \eqref{eq:F3} at $z=0$ reads
+\[
+|2\rho+\rho^2|\ \le\ \frac{K\,n^2}{\varepsilon(p)\,D_z}=\frac K4\,\frac{\varepsilon_*^2}{\varepsilon(p)} ,
+\]
+so, with $\varepsilon_*=\varepsilon(p)(1+O(p^{-1}))$, the cancellation must hold to relative accuracy $O(\varepsilon(p))$ against the \emph{exact} quantity $\tfrac12\sqrt{D_z}$, and, because of the absolute value in \eqref{eq:E2ab}, both an excess and a deficit of flux must be excluded. Replacing $\tfrac12\sqrt{D_z}$ by $C(p)\varepsilon(p)$ in this target would require the density asymptotics to the same relative accuracy $O(p^{-3})$; the preprint's expansions carry relative corrections of order $p^{-1}$ (inverse-radius terms of the direct channel and the remainder of the complementary channel), so the target must be stated with $\sqrt{D_z}$ itself, or with effective coefficients that absorb those corrections. By (b), accuracy of this order is also necessary in the model.
+\end{remark}
+
+What is known:
+\begin{enumerate}
+\item In the strip model, Tables~\ref{tab:strip}--\ref{tab:diag} indicate that the hypothesis of Lemma~\ref{lem:flux}(a) holds with $K_\varepsilon\to(4/\pi)\sqrt{2d}$ and that $J_0=\varepsilon+(2/\pi)\sqrt{2d}\,\varepsilon^2(1+o(1))$, consistent with $W(0)-d=(\varepsilon^2-J_0^2)/(2\varepsilon^4)\approx-(J_0-\varepsilon)/\varepsilon^3$. This is numerical evidence for the model, not a proof, and it concerns the model, not the molecule.
+\item In three dimensions, the preprint provides a lower bound of the right order on the flux at the plane: its Eq.~(4.18), $\partial_z\theta(p,0)\ge\tfrac\pi2|\partial_zU(p,0)|$ with $U$ the strip comparison function of its Lemma~4.4, gives $J(\mathbf x_\parallel,0)\ge c_0\,C(p)\varepsilon(p)$ with an explicit but small $c_0$. What is missing is the two-sided relation $J(\mathbf x_\parallel,0)=\tfrac12\sqrt{D_z(\mathbf x_\parallel,0)}\,(1+O(\varepsilon(p)))$ of Remark~\ref{rem:norm}, the control \eqref{eq:F3} through the inner layer $|z|\lesssim\varepsilon(p)$ and across $|z|\le1$, and the horizontal gradient bound in \eqref{eq:E2ab}. All of these must retain the azimuthal dependence of $\theta$, and all require an inner-layer analysis of (H2) at $|z|\sim p^{-3}$ with error control, which the preprint's estimates (first derivatives and horizontal second derivatives of $\log n$ only) do not supply.
+\end{enumerate}
+
+\begin{conjecture}[Strip bound]\label{conj:B}
+Estimate~\ref{est:E2} holds. By Proposition~\ref{prop:E1} and Theorem~\ref{thm:B} this implies $V\in\VV+\SS$ and makes all conclusions of Theorem~\ref{thm:B} unconditional. The implication is one-directional: membership $V\in\VV+\SS$ alone does not imply Estimate~\ref{est:E2}, since an $L^{3/2}$ function may have arbitrarily large vertical integrals over horizontal sets of small measure.
+\end{conjecture}
+
+\begin{conjecture}[Sheet asymptotics]\label{conj:sheet}
+With $\varepsilon(p)$ as in Section~\ref{sec:strip} and $c=d+k^2/2$,
+\[
+\int_{-1}^{1}\big(V(\mathbf x_\parallel,z)-c\big)\dd z\to-\sqrt{2d}\qquad\text{and}\qquad\int_{-1}^{1}\big|V(\mathbf x_\parallel,z)-c\big|\dd z\to\sqrt{2d}\qquad(|\mathbf x_\parallel|\to\infty),
+\]
+uniformly in the azimuth, with $V-c$ concentrated on $|z|\lesssim\varepsilon(p)$ and $V(\mathbf x_\parallel,0)\to-\infty$ like $-(2/\pi)\sqrt{2d}/\varepsilon(p)$. This is the statement that the strip-model asymptotics of Section~\ref{sec:strip} transfer to the molecule; it implies Conjecture~\ref{conj:B}.
+\end{conjecture}
+
+\begin{conjecture}[Essential spectrum]\label{conj:ess}
+$\sigma_{\rm ess}(H_V)=[k^2/2,\infty)$. This does not follow from Conjecture~\ref{conj:B} or~\ref{conj:sheet} as stated; it would require control of the limiting sheet strength together with the remaining terms in \eqref{eq:Vdecomp} in a form suitable for a Weyl-sequence or Persson-type argument.
+\end{conjecture}
+
+\begin{thebibliography}{99}\small
+\bibitem{HK} P.~Hohenberg and W.~Kohn, Inhomogeneous electron gas, Phys.\ Rev.\ \textbf{136}, B864 (1964).
+\bibitem{KS} W.~Kohn and L.~J.~Sham, Self-consistent equations including exchange and correlation effects, Phys.\ Rev.\ \textbf{140}, A1133 (1965).
+\bibitem{Lieb83} E.~H.~Lieb, Density functionals for Coulomb systems, Int.\ J.\ Quantum Chem.\ \textbf{24}, 243 (1983).
+\bibitem{Levy82} M.~Levy, Electron densities in search of Hamiltonians, Phys.\ Rev.\ A \textbf{26}, 1200 (1982).
+\bibitem{CCR} J.~T.~Chayes, L.~Chayes and M.~B.~Ruskai, Density functional approach to quantum lattice systems, J.\ Stat.\ Phys.\ \textbf{38}, 497 (1985).
+\bibitem{Sutter24} S.~M.~Sutter, M.~Penz, M.~Ruggenthaler, R.~van Leeuwen and K.~J.~H.~Giesbertz, Solution of the $v$-representability problem on a one-dimensional torus, J.\ Phys.\ A \textbf{57}, 475202 (2024).
+\bibitem{Corso26} T.~C.~Corso, A rigorous formulation of density functional theory for spinless fermions in one dimension, Lett.\ Math.\ Phys.\ \textbf{116}, 27 (2026); arXiv:2504.05501.
+\bibitem{PenzReview1} M.~Penz, E.~I.~Tellgren, M.~A.~Csirik, M.~Ruggenthaler and A.~Laestadius, The structure of density-potential mapping. Part I, ACS Phys.\ Chem.\ Au \textbf{3}, 334 (2023).
+\bibitem{PenzReview2} M.~Penz, E.~I.~Tellgren, M.~A.~Csirik, M.~Ruggenthaler and A.~Laestadius, The structure of density-potential mapping. Part II, ACS Phys.\ Chem.\ Au \textbf{3}, 492 (2023).
+\bibitem{vanLeeuwen03} R.~van Leeuwen, Density functional approach to the many-body problem: key concepts and exact functionals, Adv.\ Quantum Chem.\ \textbf{43}, 25 (2003).
+\bibitem{OpenAI} OpenAI, A Coulomb ground-state density without Kohn--Sham ensemble representation, preprint, 25 September 2026, \url{https://github.com/openai/math/blob/main/preprints/A-Coulomb-Ground-State-Density-without-Kohn-Sham-Ensemble-Representation-September-25-2026/paper.pdf}.
+\bibitem{GGB16} P.~Gori-Giorgi, T.~G\'al and E.~J.~Baerends, Asymptotic behaviour of the electron density and the Kohn--Sham potential in case of a Kohn--Sham HOMO nodal plane, Mol.\ Phys.\ \textbf{114}, 1086 (2016).
+\bibitem{GB18} P.~Gori-Giorgi and E.~J.~Baerends, Asymptotic nodal planes in the electron density and the potential in the effective equation for the square root of the density, Eur.\ Phys.\ J.\ B \textbf{91}, 160 (2018).
+\bibitem{Kato} T.~Kato, Perturbation Theory for Linear Operators, Springer, Berlin (1995).
+\bibitem{RS1} M.~Reed and B.~Simon, Methods of Modern Mathematical Physics I: Functional Analysis, Academic Press (1980).
+\bibitem{RS2} M.~Reed and B.~Simon, Methods of Modern Mathematical Physics II: Fourier Analysis, Self-Adjointness, Academic Press (1975).
+\bibitem{GT} D.~Gilbarg and N.~S.~Trudinger, Elliptic Partial Differential Equations of Second Order, Springer, Berlin (2001).
+\bibitem{FS08} R.~L.~Frank and R.~Seiringer, Non-linear ground state representations and sharp Hardy inequalities, J.\ Funct.\ Anal.\ \textbf{255}, 3407 (2008).
+\end{thebibliography}
+
+\end{document}
