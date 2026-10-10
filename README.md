@@ -1,7 +1,7 @@
 # Kohn–Sham representability beyond L^{3/2}+L^∞
 
 Working directory for the manuscript *A Kohn–Sham Hamiltonian for the OpenAI three-electron density:
-representability beyond L^{3/2}+L^∞* (Cody Haycraft), a response to the OpenAI preprint
+a note on representability beyond L^{3/2}+L^∞* (Cody Haycraft), a response to the OpenAI preprint
 *A Coulomb ground-state density without Kohn–Sham ensemble representation* (25 Sep 2026).
 
 ## Layout
